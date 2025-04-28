@@ -1,21 +1,36 @@
 class Price:
     def get_charge(self, days_rented: int) -> float:
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
 
     def get_frequent_renter_points(self, days_rented: int) -> int:
-        pass
+        return 1
 
 
 class RegulaPrice(Price):
-    pass
+    def get_charge(self, days_rented: int) -> float:
+        amount = 2
+        if days_rented > 2:
+            amount += (days_rented - 2) * 1.5
+        return amount
 
 
 class NewReleasePrice(Price):
-    pass
+    def get_charge(self, days_rented: int) -> float:
+        return days_rented * 3
+
+    def get_frequent_renter_points(self, days_rented: int) -> int:
+        points = 1
+        if days_rented > 1:
+            points += 1
+        return points
 
 
 class ChildrenPrice(Price):
-    pass
+    def get_charge(self, days_rented: int) -> float:
+        amount = 1.5
+        if days_rented > 3:
+            amount += (days_rented - 3) * 1.5
+        return amount
 
 
 class Book:
@@ -50,8 +65,8 @@ class Rental:
     def get_charge(self) -> float:
         return self.book.get_charge(self.days_rented)
 
-    def get_frequent_renter_points(self, points):
-        return self.book.get_frequent_renter_points(self.days_rented, points)
+    def get_frequent_renter_points(self):
+        return self.book.get_frequent_renter_points(self.days_rented)
 
 
 class Client:
@@ -69,9 +84,7 @@ class Client:
 
         for rental in self.rentals:
             amount = rental.get_charge()
-            frequent_renter_points += rental.get_frequent_renter_points(
-                frequent_renter_points
-            )
+            frequent_renter_points += rental.get_frequent_renter_points()
 
             # show each rental result
             result += f"- {rental.book.title}: {amount}\n"
